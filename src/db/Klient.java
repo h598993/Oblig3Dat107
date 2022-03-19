@@ -49,5 +49,7 @@ public class Klient {
 			em.close();
 		}
 	}
+	
+	// Test
 
 }
