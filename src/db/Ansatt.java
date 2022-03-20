@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 @Entity
@@ -11,7 +13,9 @@ import javax.persistence.Table;
 public class Ansatt {
 
 	
-	@Id private int brukerid;
+	@Id 
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int brukerid;
 	private String brukernavn;
 	private String fornavn;
 	private String etternavn;
