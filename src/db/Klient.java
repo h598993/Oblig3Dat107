@@ -3,94 +3,135 @@ package db;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.TypedQuery;
+import java.util.Scanner;
 
 public class Klient {
 
 	public static void main(String[] args) {
+
+		kjoer();
+
+	}
+
+	private static void kjoer() {
 		AnsattDAO db = new AnsattDAO();
-		
-		Ansatt a1 = db.finnAnsattMedId(2);
-		System.out.println(a1);
-		
-		Ansatt a2 = db.finnAnsattMedBrukernavn("");
-		System.out.println(a2);
-		
-		skrivUtAlleAnsatte();
-		
-		// Endre Stilling
-		System.out.println(db.endreStilling(1, "Tømrer"));
-		Ansatt a3 = db.finnAnsattMedBrukernavn("sl");
-		System.out.println(a3);
-		
-		// Endre lønn
-		System.out.println("*****************************************");
-		System.out.println(db.endreLonn(2,new BigDecimal(350000) ));
-		skrivUtAlleAnsatte();
-		
-		System.out.println("**********************************");
-		// legge til en ansatt
-		System.out.println(db.leggTilAnsatt("bs", "Brannmann", "Sam", LocalDateTime.now(), "Brannmann", new BigDecimal(400000)));
-		skrivUtAlleAnsatte();
-		
-		
-		
-		
-		
-		
-		
-	
-		
-	}
-	
-	
+		Scanner scanner = new Scanner(System.in);
+		while (true) {
+			System.out.println("************************************************************************************");
+			System.out.println("Hva vil du gjøre?");
+			System.out.println(
+					"(V)is alle Ansatte, (F)inn ansatt, (L)egg til ansatt, (P)rint ansatte ved avdeling , (A)vslutt");
+			char respons = Character.toUpperCase(scanner.nextLine().charAt(0));
 
-	public static void hentAnsatt(int id) {
+			switch (respons) {
 
-		EntityManagerFactory emf = Persistence.createEntityManagerFactory("PersistenceUnit");
-		EntityManager em = emf.createEntityManager();
+			case 'V':
+				skrivUtAlleAnsatte();
+				break;
 
-		try {
-			Ansatt a1 = em.find(Ansatt.class, id);
-			System.out.println(a1);
-		} catch (Throwable e) {
-			System.out.println("Error: ");
-			e.printStackTrace();
+			case 'F':
+				System.out.println("Skriv brukernavn på ansatt");
+				String respons2 = scanner.nextLine();
+				System.out.println(db.finnAnsattMedBrukernavn(respons2));
+				break;
 
-		} finally {
-			em.close();
-		}
-	}
+			case 'L':
+				System.out.println("Skriv brukernavn");
+				String brukernavn = scanner.nextLine();
+				System.out.println("Skriv fornavn");
+				String fornavn = scanner.nextLine();
+				System.out.println("Skriv etternavn");
+				String etternavn = scanner.nextLine();
+				System.out.println("Skriv stilling");
+				String stilling = scanner.nextLine();
+				System.out.println("Velg lønn");
+				BigDecimal lonn = new BigDecimal(scanner.nextLine());
+				System.out.println("Skriv inn avdelingskode");
+				int avdkode = Integer.parseInt(scanner.nextLine());
 
-	public static void hentAlleAnsatte() {
-		EntityManagerFactory emf = Persistence.createEntityManagerFactory("PersistenceUnit");
-		EntityManager em = emf.createEntityManager();
+				db.leggTilAnsatt(brukernavn, fornavn, etternavn, LocalDateTime.now(), stilling, lonn, avdkode);
+				break;
 
-		try {
-		TypedQuery<Ansatt> query = em.createQuery("SELECT a FROM Ansatt a ", Ansatt.class);
-			List<Ansatt> ansattliste = query.getResultList();
-			
-			for(int i = 0; i < ansattliste.size(); i++) {
-				System.out.println(ansattliste.get(i));
+			case 'P':
+				System.out.println("Skriv inn avdelingskode");
+				printAnsatteVedAvdeling(Integer.parseInt(scanner.nextLine()));
+				break;
+
+			case 'A':
+				scanner.close();
+				avslutt();
+				break;
+
+			default:
+				System.out.println("Feil! Prøv igjen");
+				break;
 			}
-			
-		} catch (Throwable e) {
-			e.printStackTrace();
-		} finally {
-			em.close();
+
 		}
 	}
-	
+
+	private static void avslutt() {
+		System.out.println("Program avsluttet");
+		System.exit(0);
+	}
+
+	public static void printAnsatteVedAvdeling(int avdId) {
+		
+		AvdelingDAO adb = new AvdelingDAO();
+
+		Ansatt leder = adb.finnLeder(avdId);
+		if (leder == null) {
+			System.out.println("Denne avdelingen finnes ikke");
+			return;
+		}
+
+		List<Ansatt> avdAnsatte = adb.avdeling(avdId);
+
+		int lederIndx = -1;
+		boolean funnet = false;
+
+		for (int i = 0; i < avdAnsatte.size() && !funnet; i++) {
+			if (avdAnsatte.get(i).getBrukerid() == leder.getBrukerid()) {
+				lederIndx = i;
+				funnet = true;
+			}
+		}
+		avdAnsatte.remove(lederIndx); // fyller inn indeks
+		avdAnsatte.add(0, leder);
+
+		for (int i = 0; i < avdAnsatte.size(); i++) {
+
+			if (leder.getBrukerid() == avdAnsatte.get(i).getBrukerid()) {
+
+				System.out.println(leder.toString().toUpperCase());
+			} else {
+				System.out.println(avdAnsatte.get(i));
+			}
+
+		}
+
+	}
+
+	public static boolean endreAvdeling(int ansattid, int avdKode) {
+
+		AnsattDAO db = new AnsattDAO();
+		AvdelingDAO adb = new AvdelingDAO();
+		Ansatt ansatt = db.finnAnsattMedId(ansattid);
+		Ansatt leder = adb.finnLeder(ansatt.getAvdeling());
+
+		if (ansatt.equals(leder)) {
+			return false;
+		}
+
+		return db.endreAvdeling(ansattid, avdKode);
+	}
+
 	public static void skrivUtAlleAnsatte() {
 		AnsattDAO db = new AnsattDAO();
 		List<Ansatt> alleAnsatte = db.finnAlleAnsatte();
-		for(int i = 0; i < alleAnsatte.size();i++) {
+		for (int i = 0; i < alleAnsatte.size(); i++) {
 			System.out.println(alleAnsatte.get(i));
 		}
-		
+
 	}
 }

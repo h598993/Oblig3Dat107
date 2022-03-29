@@ -22,11 +22,12 @@ public class Ansatt {
 	private LocalDateTime ansettelsesdato;
 	private String stilling;
 	private BigDecimal maanedslonn;
+	private int avdeling;
 	
 	public Ansatt() {
 		
 	}
-	public Ansatt(int brukerid, String brukernavn, String fornavn, String etternavn, LocalDateTime ansettelsesdato, String stilling, BigDecimal maanedslonn ) {
+	public Ansatt(int brukerid, String brukernavn, String fornavn, String etternavn, LocalDateTime ansettelsesdato, String stilling, BigDecimal maanedslonn, int avdeling ) {
 		this.brukerid = brukerid;
 		this.brukernavn = brukernavn;
 		this.fornavn = fornavn;
@@ -34,6 +35,7 @@ public class Ansatt {
 		this.ansettelsesdato = ansettelsesdato;
 		this.stilling = stilling;
 		this.maanedslonn = maanedslonn;	
+		this.avdeling = avdeling;
 	}
 	public int getBrukerid() {
 		return brukerid;
@@ -77,11 +79,19 @@ public class Ansatt {
 	public void setMaanedslonn(BigDecimal maanedslonn) {
 		this.maanedslonn = maanedslonn;
 	}
+	
+	
+	public int getAvdeling() {
+		return avdeling;
+	}
+	public void setAvdeling(int avdeling) {
+		this.avdeling = avdeling;
+	}
 	@Override
 	public String toString() {
 		return "Ansatt [brukerid=" + brukerid + ", brukernavn=" + brukernavn + ", fornavn=" + fornavn + ", etternavn="
 				+ etternavn + ", ansettelsesdato=" + ansettelsesdato + ", stilling=" + stilling + ", maanedslonn="
-				+ maanedslonn + "]";
+				+ maanedslonn + ", avdeling=" + avdeling + "]";
 	}
 	
 	

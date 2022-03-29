@@ -11,6 +11,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
+
 public class AnsattDAO {
 
 	private EntityManagerFactory emf = Persistence.createEntityManagerFactory("PersistenceUnit");
@@ -32,6 +33,7 @@ public class AnsattDAO {
 		EntityManager em = emf.createEntityManager();
 
 		try {
+
 			TypedQuery<Ansatt> query = em.createQuery("SELECT a FROM Ansatt a WHERE a.brukernavn LIKE :brukernavn ",
 					Ansatt.class);
 			query.setParameter("brukernavn", brukernavn);
@@ -111,8 +113,8 @@ public class AnsattDAO {
 		return true;
 	}
 
-	public Ansatt leggTilAnsatt(String brukernavn, String fornavn, String etternavn,
-			LocalDateTime ansettelsesdato, String stilling, BigDecimal maanedslonn) {
+	public Ansatt leggTilAnsatt(String brukernavn, String fornavn, String etternavn, LocalDateTime ansettelsesdato,
+			String stilling, BigDecimal maanedslonn, int avdeling) {
 
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction tx = em.getTransaction();
@@ -126,13 +128,15 @@ public class AnsattDAO {
 			a1.setAnsettelsesdato(ansettelsesdato);
 			a1.setStilling(stilling);
 			a1.setMaanedslonn(maanedslonn);
+			a1.setAvdeling(avdeling);
 			em.persist(a1);
 			tx.commit();
 			return a1;
-			
+
 		} catch (Throwable e) {
+			System.out.println("Kunne ikke legge til brukeren. Brukernevenet kan allerde være opptatt");
 			e.printStackTrace();
-			if(tx.isActive()) {
+			if (tx.isActive()) {
 				tx.rollback();
 			}
 		} finally {
@@ -140,6 +144,29 @@ public class AnsattDAO {
 		}
 
 		return null;
+	}
+
+	public boolean endreAvdeling(int ansattId, int avdId) {
+
+		EntityManager em = emf.createEntityManager();
+		EntityTransaction tx = em.getTransaction();
+
+		try {
+			tx.begin();
+			Ansatt a1 = em.find(Ansatt.class, ansattId);
+			a1.setAvdeling(avdId);
+			tx.commit();
+
+		} catch (Throwable e) {
+			e.printStackTrace();
+			if (tx.isActive()) {
+				tx.rollback();
+				return false;
+			}
+		} finally {
+			em.close();
+		}
+		return true;
 	}
 
 }

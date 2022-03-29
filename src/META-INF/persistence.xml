@@ -9,6 +9,7 @@
     <persistence-unit name="PersistenceUnit" transaction-type="RESOURCE_LOCAL"> 
    
         <class>db.Ansatt</class> 
+        <class>db.Avdeling</class>
    
         <properties> 
             <!--  Generelle JPA properties --> 
