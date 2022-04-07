@@ -91,7 +91,7 @@ public class AvdelingDAO {
 		return null;
 	}
 
-	private boolean erIkkeLeder(int ansattId) {
+	public boolean erIkkeLeder(int ansattId) {
 		EntityManager em = emf.createEntityManager();
 
 		try {

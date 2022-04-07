@@ -55,7 +55,7 @@ public class AnsattDAO {
 
 		try {
 
-			TypedQuery<Ansatt> query = em.createQuery("SELECT a FROM Ansatt a", Ansatt.class);
+			TypedQuery<Ansatt> query = em.createQuery("SELECT a FROM Ansatt a ORDER BY a.etternavn", Ansatt.class);
 			return query.getResultList();
 
 		} catch (Throwable e) {

@@ -15,12 +15,13 @@ public class Klient {
 
 	private static void kjoer() {
 		AnsattDAO db = new AnsattDAO();
+		AvdelingDAO adb = new AvdelingDAO();
 		Scanner scanner = new Scanner(System.in);
 		while (true) {
 			System.out.println("************************************************************************************");
 			System.out.println("Hva vil du gjøre?");
 			System.out.println(
-					"(V)is alle Ansatte, (F)inn ansatt, (L)egg til ansatt, (P)rint ansatte ved avdeling , (A)vslutt");
+					"(V)is alle Ansatte, (F)inn ansatt, (L)egg til ansatt, (P)rint ansatte ved avdeling , (S)øk etter ansatt på ID, (O)ppdater stilling eller lønn, (E)ndre avdeling, (A)vslutt");
 			char respons = Character.toUpperCase(scanner.nextLine().charAt(0));
 
 			switch (respons) {
@@ -57,6 +58,51 @@ public class Klient {
 				printAnsatteVedAvdeling(Integer.parseInt(scanner.nextLine()));
 				break;
 
+			case 'S':
+				System.out.println("Skriv inn id på ansatt det skal søkes etter:");
+				System.out.println(db.finnAnsattMedId(Integer.parseInt(scanner.nextLine())));
+				break;
+
+			case 'O':
+				System.out.println("Ønsker du å oppdatere (S)tilling eller (L)ønn?");
+				char tilbakemelding = Character.toUpperCase(scanner.nextLine().charAt(0));
+				if (tilbakemelding == 'L') {
+					System.out.println("Skriv inn brukerId");
+					int id = Integer.parseInt(scanner.nextLine());
+					System.out.println("Skriv inn ny lønn for den ansatte");
+					BigDecimal nyLonn = new BigDecimal(scanner.nextLine());
+					db.endreLonn(id, nyLonn);
+					System.out.println("Lønn er oppdatert.");
+					System.out.println(db.finnAnsattMedId(id));
+				} else if (tilbakemelding == 'S') {
+					System.out.println("Skriv inn brukerId");
+					int id = Integer.parseInt(scanner.nextLine());
+					System.out.println("Skriv inn ny stilling for den ansatte");
+					String nyStilling = scanner.nextLine();
+					db.endreStilling(id, nyStilling);
+					System.out.println("Stilling er oppdatert.");
+					System.out.println(db.finnAnsattMedId(id));
+				} else {
+					System.out.println("Feil input. Prøv igjen");
+				}
+				break;
+
+			case 'E':
+				
+				System.out.println("Skriv inn ansattId du ønskar skal få ny avdeling");
+				int ansattId = Integer.parseInt(scanner.nextLine());
+				if(adb.erIkkeLeder(ansattId)) {
+					System.out.println("Velg ny avdelingskode");
+					int avdelingskode = Integer.parseInt(scanner.nextLine());
+					db.endreAvdeling(ansattId, avdelingskode);
+					System.out.println("Den ansatte er lagt til ved ny avdeling");
+					System.out.println(db.finnAnsattMedId(ansattId));
+				}else {
+					System.out.println("Den ansatte er leder og kan dermed ikke skifte avdeling.");
+				}
+				
+				break;
+
 			case 'A':
 				scanner.close();
 				avslutt();
@@ -76,7 +122,7 @@ public class Klient {
 	}
 
 	public static void printAnsatteVedAvdeling(int avdId) {
-		
+
 		AvdelingDAO adb = new AvdelingDAO();
 
 		Ansatt leder = adb.finnLeder(avdId);
