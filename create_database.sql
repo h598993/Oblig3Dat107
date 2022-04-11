@@ -26,8 +26,8 @@ INSERT INTO ansatt
 VALUES
 (
    'sl',
-   'Stian',
-   'Lodemel',
+   'Sylvester',
+   'Stalone',
    '2016-06-22 19:10:25-07',
    'Student',
    600000,

@@ -21,7 +21,7 @@ public class Klient {
 			System.out.println("************************************************************************************");
 			System.out.println("Hva vil du gjøre?");
 			System.out.println(
-					"(V)is alle Ansatte, (F)inn ansatt, (L)egg til ansatt, (P)rint ansatte ved avdeling , (S)øk etter ansatt på ID, (O)ppdater stilling eller lønn, (E)ndre avdeling, (A)vslutt");
+					" (V)is alle Ansatte\n (F)inn ansatt\n (L)egg til ansatt\n (P)rint ansatte ved avdeling\n (S)øk etter ansatt på ID\n (O)ppdater stilling eller lønn\n (E)ndre avdeling\n (A)vslutt");
 			char respons = Character.toUpperCase(scanner.nextLine().charAt(0));
 
 			switch (respons) {
